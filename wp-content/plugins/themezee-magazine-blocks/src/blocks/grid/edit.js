@@ -1,0 +1,117 @@
+/**
+ * External dependencies
+ */
+const {
+	map,
+} = lodash;
+
+/**
+ * WordPress dependencies
+ */
+const { compose } = wp.compose;
+const { withSelect } = wp.data;
+const { Component } = wp.element;
+
+const {
+	__,
+	sprintf,
+} = wp.i18n;
+
+const {
+	PanelBody,
+	RangeControl,
+	SelectControl,
+	Toolbar,
+} = wp.components;
+
+/**
+ * Internal dependencies
+ */
+import MagazineBlock from '../../components/magazine-block';
+import {
+	IconMagazineGrid,
+	IconNumberTwo,
+	IconNumberThree,
+	IconNumberFour,
+} from '../../components/data/icons';
+
+/**
+ * Block Edit Component
+ */
+class MagazineGridEdit extends Component {
+	render() {
+		const {
+			attributes,
+			setAttributes,
+			availableImageSizes,
+		} = this.props;
+
+		const {
+			columns,
+			imageSize,
+		} = attributes;
+
+		const columnIcons = {
+			2: IconNumberTwo,
+			3: IconNumberThree,
+			4: IconNumberFour,
+		};
+
+		const blockControls = (
+			<Toolbar
+				controls={
+					[ 2, 3, 4 ].map( column => ( {
+						icon: columnIcons[ column ],
+						title: sprintf( __( '%s Columns', 'themezee-magazine-blocks' ), column ),
+						isActive: column === columns,
+						onClick: () => setAttributes( { columns: column } ),
+					} ) )
+				}
+			/>
+		);
+
+		const layoutSettings = (
+			<PanelBody title={ __( 'Layout Settings', 'themezee-magazine-blocks' ) } initialOpen={ false }>
+
+				<RangeControl
+					label={ __( 'Columns', 'themezee-magazine-blocks' ) }
+					value={ columns }
+					onChange={ ( value ) => setAttributes( { columns: value } ) }
+					min={ 2 }
+					max={ 4 }
+				/>
+
+				<SelectControl
+					label={ __( 'Image Size', 'themezee-magazine-blocks' ) }
+					value={ imageSize }
+					onChange={ ( value ) => setAttributes( { imageSize: value } ) }
+					options={ map( availableImageSizes, ( size ) => ( {
+						value: size.slug,
+						label: size.name,
+					} ) ) }
+				/>
+
+			</PanelBody>
+		);
+
+		return (
+			<MagazineBlock
+				placeholderLabel={ __( 'Magazine Grid', 'themezee-magazine-blocks' ) }
+				placeholderIcon={ IconMagazineGrid }
+				blockControls={ blockControls }
+				layoutSettings={ layoutSettings }
+				magazineTemplate="magazine-grid"
+				{ ...this.props }
+			/>
+		);
+	}
+}
+
+export default compose( [
+	withSelect( ( select ) => {
+		const settings = select( 'core/editor' ).getEditorSettings();
+		return {
+			availableImageSizes: settings.imageSizes,
+		};
+	} ),
+] )( MagazineGridEdit );

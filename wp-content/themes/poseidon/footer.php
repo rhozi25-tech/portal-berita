@@ -19,8 +19,11 @@
 
 			<?php do_action( 'poseidon_footer_menu' ); ?>
 
+			<!-- <div id="footer-text" class="site-info">
+				<?php //do_action( 'poseidon_footer_text' ); ?>
+			</div>site-info --> 
 			<div id="footer-text" class="site-info">
-				<?php do_action( 'poseidon_footer_text' ); ?>
+				<?php echo "Copyright &copy; SekolahImpian 2020"; ?>
 			</div><!-- .site-info -->
 
 		</footer><!-- #colophon -->
